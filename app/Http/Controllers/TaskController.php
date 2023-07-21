@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -44,8 +45,28 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function update(Task $task){
-        $task->update(['completed' => !$task->completed]);
+    public function update(Request $request, Task $task){
+        $request->validate([
+            'title' => 'nullable|string|max:100',
+            'description' => 'nullable|string',
+            'completed' => 'nullable|boolean',
+            'date' => 'nullable|date:Y-m-d'
+        ]);
+        
+        if($request->date){
+            $task->date = $request->date;
+        }
+        if($request->title){
+            $task->title = $request->title;
+        }
+        if($request->description){
+            $task->description = $request->description;
+        }
+        if(!is_null($request->completed)){
+            $task->completed = $request->completed ;
+        }
+        $task->save();
+
         return new TaskResource($task);
     }   
 
