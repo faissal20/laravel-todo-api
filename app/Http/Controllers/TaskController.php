@@ -33,9 +33,12 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'nullable|string',
+            'date' => 'date|Y-m-d'
         ]);
-
-        $task = Task::create([ ...$request->all(), 'completed' => false ]);
+        
+        if(!$request->date) $date = now()->format('Y-m-d'); 
+        else $date = $request->date;
+        $task = Task::create([ ...$request->all(), 'completed' => false, 'date' => $date ]);
 
         return new TaskResource($task);
     }
